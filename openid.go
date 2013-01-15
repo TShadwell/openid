@@ -152,9 +152,7 @@ func Validate(values url.Values) (grant bool, id string, err error) {
 		err = NO_OP_ENDPOINT
 		return
 	}
-	//if endpoint != OP{
-	//		err = DIFFERING_ENDPOINT
-	//	}
+
 	if values.Get("openid.mode") != "id_res" {
 		err = INCORRECT_MODE
 		return
