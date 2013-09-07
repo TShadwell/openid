@@ -17,9 +17,9 @@ package openid
 
 import (
 	"bytes"
-	"code.google.com/p/go.net/html"
 	"code.google.com/p/go-html-transform/h5"
 	"code.google.com/p/go-html-transform/html/transform"
+	"code.google.com/p/go.net/html"
 	"encoding/xml"
 	"errors"
 	"io"
@@ -220,12 +220,12 @@ func discover(identifier string) (io.ReadCloser, error) {
 
 func discoverFromHTMLNode(root *h5.Tree) (loc string, ok bool) {
 
-	first:=true
+	first := true
 	new(transform.Transformer).Apply(func(x *html.Node) {
-		if first{
+		if first {
 			for _, v := range x.Attr {
 				if v.Key == "content" {
-					loc, ok  = v.Val, true
+					loc, ok = v.Val, true
 					return
 				}
 			}
