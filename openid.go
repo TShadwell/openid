@@ -229,6 +229,7 @@ func discoverFromHTMLNode(root *h5.Tree) (loc string, ok bool) {
 					return
 				}
 			}
+			first = false
 		}
 	}, "meta[http-equiv=X-XRDS-Location]")
 	return "", false
