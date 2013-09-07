@@ -17,6 +17,7 @@ package openid
 
 import (
 	"bytes"
+	"code.google.com/p/go.net/html"
 	"code.google.com/p/go-html-transform/h5"
 	"code.google.com/p/go-html-transform/html/transform"
 	"encoding/xml"
@@ -203,12 +204,11 @@ func discover(identifier string) (io.ReadCloser, error) {
 		return discover(h)
 		//If it's HTML we need to search the meta tags ;.;
 	} else if strings.HasPrefix(contentType, "text/html") {
-		p := h5.NewParser(resp.Body)
-		e := p.Parse()
+		p, e := h5.New(resp.Body)
 		if e != nil {
 			return nil, e
 		}
-		str, ok := discoverFromHTMLNode(p.Tree())
+		str, ok := discoverFromHTMLNode(p)
 		if ok {
 			return discover(str)
 		}
@@ -218,17 +218,19 @@ func discover(identifier string) (io.ReadCloser, error) {
 
 }
 
-var yadisGetter = transform.NewSelectorQuery("meta[http-equiv=X-XRDS-Location]")
+func discoverFromHTMLNode(root *h5.Tree) (loc string, ok bool) {
 
-func discoverFromHTMLNode(root *h5.Node) (loc string, ok bool) {
-	if r := yadisGetter.Apply(root); len(r) > 0 {
-		elm := r[0]
-		for _, v := range elm.Attr {
-			if v.Name == "content" {
-				return v.Value, true
+	first:=true
+	new(transform.Transformer).Apply(func(x *html.Node) {
+		if first{
+			for _, v := range x.Attr {
+				if v.Key == "content" {
+					loc, ok  = v.Val, true
+					return
+				}
 			}
 		}
-	}
+	}, "meta[http-equiv=X-XRDS-Location]")
 	return "", false
 }
 
